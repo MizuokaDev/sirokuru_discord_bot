@@ -49,18 +49,15 @@ class Ticket(commands.Cog):
     #手動でチケットを作成
     @commands.command()
     async def ticket(self, ctx, user_id):
-        self.cp.read('config.ini', encoding='utf-8')
-        ticket_id = int(self.cp.get('ticket','last_ticket_id')) + 1
-        self.cp["ticket"]["last_ticket_id"] = str(ticket_id)
-        with open("config.ini", "w") as file:
-            self.cp.write(file)
-            today = datetime.date.today()
-            u = await self.bot.fetch_user(user_id)
-            cat = await self.bot.fetch_channel(932174541487235102)
-            ticket_ch = await cat.create_text_channel(name=f"ticket_{ticket_id}［{today.month}-{today.day}］")
-            await ticket_ch.set_permissions(u, read_messages=True, send_messages=True, read_message_history=True)
-            m = await ticket_ch.send(f'{u.mention}さんのチケットを作成しました。\nチケットを閉じる場合は、✖を押してください。')
-            await m.add_reaction('✖')
+        ticket_id = int(config.read('ticket', 'last_ticket_id')) + 1
+        config.write('ticket', 'last_ticket_id', str(ticket_id))
+        today = datetime.date.today()
+        u = await self.bot.fetch_user(user_id)
+        cat = await self.bot.fetch_channel(config.read('ticket', 'active_ticket_category_id'))
+        ticket_ch = await cat.create_text_channel(name=f"ticket_{ticket_id}［{today.month}-{today.day}］")
+        await ticket_ch.set_permissions(u, read_messages=True, send_messages=True, read_message_history=True)
+        m = await ticket_ch.send(f'{u.mention}さんのチケットを作成しました。\nチケットを閉じる場合は、✖を押してください。')
+        await m.add_reaction('✖')
 
 def setup(bot):
     return bot.add_cog(Ticket(bot))
