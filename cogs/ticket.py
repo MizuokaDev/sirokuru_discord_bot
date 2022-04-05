@@ -4,9 +4,6 @@ import config
 
 config = config.config()
 
-def checks(ctx):
-    return ctx.message.author.id == 895821363749732352
-
 class Ticket(commands.Cog):
     
     def __init__(self, bot):
@@ -51,7 +48,6 @@ class Ticket(commands.Cog):
 
     #手動でチケットを作成
     @commands.command()
-    @commands.check(checks)
     async def ticket(self, ctx, user_id):
         ticket_id = int(config.read('ticket', 'last_ticket_id')) + 1
         config.write('ticket', 'last_ticket_id', str(ticket_id))
